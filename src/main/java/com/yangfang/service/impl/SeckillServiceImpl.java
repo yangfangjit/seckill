@@ -15,6 +15,7 @@ import org.springframework.util.DigestUtils;
 
 import com.yangfang.dao.SeckillDao;
 import com.yangfang.dao.SuccessKilledDao;
+import com.yangfang.dao.cache.RedisDao;
 import com.yangfang.dto.Exposer;
 import com.yangfang.dto.SeckillExecution;
 import com.yangfang.entity.Seckill;
@@ -39,6 +40,9 @@ public class SeckillServiceImpl implements SeckillService {
 
 	@Autowired
 	private SuccessKilledDao successKilledDao;
+	
+	@Autowired
+	private RedisDao redisDao;
 
 	// 盐值，混淆MD5
 	private final String slat = "lhasdhlsdlf*alsfdjalj^#ljasdjlkfjalksdjflkajfdlskfklajd&^&%$";
@@ -70,9 +74,13 @@ public class SeckillServiceImpl implements SeckillService {
 	 */
 	@Override
 	public Exposer exportSeckillUrl(long seckillId) {
-		Seckill seckill = seckillDao.queryById(seckillId);
-		if (seckill == null) {
-			return new Exposer(false, seckillId);
+		Seckill seckill = redisDao.getSeckill(seckillId);
+		if(seckill == null) {
+			seckill = seckillDao.queryById(seckillId);
+			if (seckill == null) {
+				return new Exposer(false, seckillId);
+			}
+			redisDao.putSeckill(seckill);
 		}
 
 		Date startTime = seckill.getStartTime();
