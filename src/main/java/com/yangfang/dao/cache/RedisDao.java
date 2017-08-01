@@ -16,6 +16,8 @@ public class RedisDao {
 	private final Logger logger = LoggerFactory.getLogger(RedisDao.class);
 
 	private final JedisPool jedisPool;
+	
+	private static String prefix = "seckill:";
 
 	private RuntimeSchema<Seckill> schema = RuntimeSchema.createFrom(Seckill.class);
 
@@ -27,7 +29,7 @@ public class RedisDao {
 		try {
 			Jedis jedis = jedisPool.getResource();
 			try {
-				String key = "seckill:" + seckillId;
+				String key = prefix + seckillId;
 				byte[] bytes = jedis.get(key.getBytes());
 				if (bytes != null) {
 					Seckill seckill = schema.newMessage();
@@ -47,7 +49,7 @@ public class RedisDao {
 		try {
 			Jedis jedis = jedisPool.getResource();
 			try {
-				String key = "seckill:" + seckill.getSeckillId();
+				String key = prefix + seckill.getSeckillId();
 				byte[] bytes = ProtostuffIOUtil.toByteArray(seckill, schema,
 						LinkedBuffer.allocate());
 				int timeout = 60 * 60;
