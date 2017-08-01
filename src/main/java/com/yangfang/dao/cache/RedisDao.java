@@ -30,7 +30,6 @@ public class RedisDao {
 				String key = "seckill:" + seckillId;
 				byte[] bytes = jedis.get(key.getBytes());
 				if (bytes != null) {
-					System.out.println(bytes.length);
 					Seckill seckill = schema.newMessage();
 					ProtostuffIOUtil.mergeFrom(bytes, seckill, schema);
 					return seckill;
@@ -52,7 +51,6 @@ public class RedisDao {
 				byte[] bytes = ProtostuffIOUtil.toByteArray(seckill, schema,
 						LinkedBuffer.allocate());
 				int timeout = 60 * 60;
-				System.out.println(bytes.length);
 				return jedis.setex(key.getBytes(), timeout, bytes);
 			} finally {
 				jedis.close();
