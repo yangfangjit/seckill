@@ -98,6 +98,6 @@ public class SeckillController {
 			SeckillExecution execution = new SeckillExecution(seckillId, SeckillStateEnum.INNER_ERROR);
 			return new SeckillResult<SeckillExecution>(true, execution);
 		}
-		
 	}
+	
 }
